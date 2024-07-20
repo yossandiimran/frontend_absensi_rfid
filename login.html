@@ -103,10 +103,10 @@
                     identity: identity,
                     password: password
                 };
-                
+
                 $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:8090/api/collections/users/auth-with-password',
+                    url: 'http://203.175.10.169:8090/api/collections/users/auth-with-password',
                     contentType: 'application/json',
                     data: JSON.stringify(data),
                     success: function (response) {
