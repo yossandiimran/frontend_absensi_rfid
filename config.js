@@ -6,6 +6,17 @@ const day = now.getDate();
 const hours = now.getHours();
 const minutes = now.getMinutes();
 const seconds = now.getSeconds();
+const option = {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+};
+const formatter = new Intl.DateTimeFormat('id-ID', option);
+const formattedDate = formatter.format(now);
 
 // Koneksi Pocketbase
 const pb = new PocketBase('http://203.175.10.169:8090'); // Koneksi Ke Pocketbase
@@ -19,7 +30,7 @@ if (userData == null) {
     window.location.href = 'login.html';
 } else {
     $("#sessionName").html(userData.record.name)
-    $("#timesNowShow").html(`${day},&nbsp;${getMonth(month)}&nbsp;${year}\n${hours}:${minutes}`)
+    $("#timesNowShow").html(`${formattedDate}`)
 }
 
 
@@ -43,4 +54,12 @@ function getMonth(bln) {
 function logout() {
     localStorage.removeItem('userData');
     window.location.href = 'login.html';
+}
+
+function formatJam(jam) {
+    const date = new Date(jam);
+    const hours = date.getUTCHours().toString().padStart(2, '0');
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
+    return timeStr;
 }

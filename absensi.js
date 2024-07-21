@@ -22,24 +22,3 @@ $(document).ready(async function () {
     });
 
 });
-
-function getStatus(status) {
-    if (status == 'TERLAMBAT') return '<div class="bg-warning btn btn-warning btn-sm">Terlambat</div>';
-    if (status == 'HADIR') return '<div class="bg-success btn btn-success btn-sm">Hadir</div>';
-    if (status == null) return '<div class="bg-danger btn btn-danger btn-sm">Tidak Hadir</div>'
-}
-
-async function getRekapHarian() {
-    const resultList = await pb.collection('get_rekap_harian').getFullList({
-        sort: 'name',
-    });
-    return resultList;
-}
-
-async function getJumlahAbsenHariIni() {
-    const resultList = await pb.collection('get_jumlah_karyawan_absen_today').getList(1, 999999999, {});
-    return resultList;
-}
-
-
-

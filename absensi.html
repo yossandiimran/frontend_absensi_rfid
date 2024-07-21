@@ -93,6 +93,15 @@
             <span class="nav-link-text ms-1">Master RFID</span>
           </a>
         </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="logout()">
+            <div
+              class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-exit"></i>
+            </div>
+            <span class="nav-link-text ms-1">Logout</span>
+          </button>
+        </li>
       </ul>
     </div>
   </aside>
@@ -107,7 +116,7 @@
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Welcome,</a></li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Administrator</h6>
+          <h6 class="font-weight-bolder mb-0"><span id="sessionName"> - </span></h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-sm-4 left-0 w-30" id="navbar">
           <ul class="navbar-nav col justify-content-between">
@@ -120,82 +129,11 @@
                 </div>
               </a>
             </li>
-            <li class="nav-item px-3 d-flex align-items-center">
-              <a class="fs-4  nav-link text-body p-0 d-flex cursor-pointer justify-content-between align-items-center"
-                data-bs-toggle="modal" data-bs-target="#modalProfile">
-                Rizkan Ramdani
-                <div>
-
-                  <div class="fixed-plugin-button-nav ms-2 cursor-pointer fs-4"
-                    style="width: 30px; height: 30px; background-color: red; border-radius: 100%;">
-                  </div>
-                </div>
-              </a>
-            </li>
           </ul>
         </div>
       </div>
     </nav>
     <!-- End Navbar -->
-
-    <!-- Modal Profile -->
-    <div class="modal fade" id="modalProfile" tabindex="-1" aria-labelledby="modalProfileLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="modalProfileLabel">My Profile</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-
-            <div class="d-flex flex-column flex-lg-row gap-4 align-items-center">
-              <div class="" id="profileSection">
-                <div class="bg-primary" style="width: 100px; height: 100px;">
-
-                </div>
-                <div class="mb-3 d-none">
-                  <label for="inputProfile" class="form-label">Disabled file input example</label>
-                  <input class="form-control" type="file" id="inputProfile">
-                </div>
-              </div>
-              <div class="col w-100">
-                <div class="d-flex g-3 align-items-center">
-                  <span class="col-form-label w-30" style="font-size: 13px;">Id Karyawan</span>
-                  <input class="row mb-1 form-control w-70 ms-1 form-control-sm" readonly type="text"
-                    placeholder="Id Karyawan" value="ADM-0293847">
-                </div>
-                <div class="d-flex g-3 align-items-center">
-                  <span class="col-form-label w-30" style="font-size: 13px;">Nama Lengkap</span>
-                  <input class="row mb-1 form-control w-70 ms-1 form-control-sm" readonly type="text"
-                    placeholder="Nama Lengkap" value="Rizkan Ramdani">
-                </div>
-                <div class="d-flex g-3 align-items-center">
-                  <span class="col-form-label w-30" style="font-size: 13px;">Divisi</span>
-                  <input class="row mb-1 form-control w-70 ms-1 form-control-sm" readonly type="text"
-                    placeholder="Divisi" value="Administrator">
-                </div>
-                <div class="d-flex g-3 align-items-center">
-                  <span class="col-form-label w-30" style="font-size: 13px;">Jabatan</span>
-                  <input class="row mb-1 form-control w-70 ms-1 form-control-sm" readonly type="text"
-                    placeholder="Jabatan" value="Administrator">
-                </div>
-                <div class="d-flex g-3 align-items-center">
-                  <span class="col-form-label w-30" style="font-size: 13px;">Tanggal Masuk</span>
-                  <input class="row mb-1 form-control w-70 ms-1 form-control-sm" readonly type="text"
-                    placeholder="Tanggal Masuk" value="12-02-2020">
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Edit</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- End Modal Profile -->
 
     <!-- Main Content -->
     <div class="container-fluid py-4">
@@ -204,10 +142,24 @@
       <div class="row">
         <div class="col-12">
           <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Absensi</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
+
+            <div class="card-body px-0 pt-1 pb-2">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label for="tgl_awal">Tanggal Awal</label>
+                    <input type="date" name="tgl_awal" class="form-control" id="tgl_awal">
+                  </div>
+                  <div class="col-md-4">
+                    <label for="tgl_awal">Tanggal Akhir</label>
+                    <input type="date" name="tgl_awal" class="form-control" id="tgl_awal">
+                  </div>
+                  <div class="col-md-4">
+                    <hr>
+                    <button id="submit_filter" type="button" class="btn btn-success">Filter</button>
+                  </div>
+                </div>
+              </div>
               <div class="table-responsive p-0">
                 <table class="table align-items-center justify-content-center mb-0">
                   <thead>
@@ -354,35 +306,30 @@
 
     </div>
   </main>
-  <!--   Core JS Files   -->
-  <script src="assets/js/core/popper.min.js"></script>
-  <script src="assets/js/core/bootstrap.min.js"></script>
-  <script src="assets/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="assets/js/plugins/smooth-scrollbar.min.js"></script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-  </script>
-  <!-- Github buttons -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <script src="assets/js/soft-ui-dashboard.min.js?v=1.0.7"></script>
-
-  <!-- Jquery -->
-  <script src="assets/style/jquery-3.7.1.js"></script>
-  <!-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> -->
-  <!-- Popper -->
-  <script src="assets/style/popper.min.js"></script>
-  <!-- Fontawesome -->
-  <script src="assets/fontawesome/js/all.js"></script>
-  <!-- DataTables -->
-  <script src="https://cdn.datatables.net/2.0.1/js/dataTables.js"></script>
-  <!-- Bootstrap -->
-  <script src="assets/bootstrap/js/bootstrap.js"></script>
 </body>
+<!--   Core JS Files   -->
+<script src="assets/js/core/popper.min.js"></script>
+<script src="assets/js/core/bootstrap.min.js"></script>
+<script src="assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="assets/js/plugins/smooth-scrollbar.min.js"></script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script src="assets/js/soft-ui-dashboard.min.js?v=1.0.7"></script>
+
+<!-- Jquery -->
+<script src="assets/style/jquery-3.7.1.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script> -->
+<!-- Popper -->
+<script src="assets/style/popper.min.js"></script>
+<!-- Fontawesome -->
+<script src="assets/fontawesome/js/all.js"></script>
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.0.1/js/dataTables.js"></script>
+<!-- Bootstrap -->
+<script src="assets/bootstrap/js/bootstrap.js"></script>
+<script src="assets/dist/pocketbase.umd.js"></script>
+
+<script src="config.js"></script>
+<script src="absensi.js"></script>
 
 </html>
