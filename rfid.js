@@ -1,5 +1,3 @@
-const pb = new PocketBase('http://203.175.10.169:8090');
-
 $(document).ready(async function () {
   var get = await getData();
 

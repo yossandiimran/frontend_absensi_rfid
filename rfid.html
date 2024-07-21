@@ -95,6 +95,15 @@
             <span class="nav-link-text ms-1">Master RFID</span>
           </a>
         </li>
+        <li class="nav-item">
+          <button class="nav-link" onclick="logout()">
+            <div
+              class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-exit"></i>
+            </div>
+            <span class="nav-link-text ms-1">Logout</span>
+          </button>
+        </li>
       </ul>
     </div>
   </aside>
@@ -109,7 +118,7 @@
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Welcome,</a></li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Administrator</h6>
+          <h6 class="font-weight-bolder mb-0"><span id="sessionName"> - </span></h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-sm-4 left-0 w-30" id="navbar">
           <ul class="navbar-nav col justify-content-between">
@@ -119,18 +128,6 @@
                   <i class="sidenav-toggler-line"></i>
                   <i class="sidenav-toggler-line"></i>
                   <i class="sidenav-toggler-line"></i>
-                </div>
-              </a>
-            </li>
-            <li class="nav-item px-3 d-flex align-items-center">
-              <a class="fs-4  nav-link text-body p-0 d-flex cursor-pointer justify-content-between align-items-center"
-                data-bs-toggle="modal" data-bs-target="#modalProfile">
-                Rizkan Ramdani
-                <div>
-
-                  <div class="fixed-plugin-button-nav ms-2 cursor-pointer fs-4"
-                    style="width: 30px; height: 30px; background-color: red; border-radius: 100%;">
-                  </div>
                 </div>
               </a>
             </li>
@@ -375,7 +372,8 @@
   <script src="assets/dist/pocketbase.umd.js"></script>
 
   <!--  myscript -->
-  <script src="scriptRF.js"></script>
+  <script src="config.js"></script>
+  <script src="rfid.js"></script>
 
 </body>
 
