@@ -116,7 +116,9 @@ async function checkDrop() {
 }
 
 async function getData() {
-  const resultList = await pb.collection('users').getFullList({});
+  const resultList = await pb.collection('users').getFullList({
+    filter: 'level = "karyawan"',
+  });
 
   return resultList;
 }
@@ -129,29 +131,8 @@ async function saveData() {
   var emailAdd = $('#emailAdd');
   var uid_card = $('#uid_card').val();
   var tanggal_masuk = $('#tanggal_masuk').val();
-  var foto_profile = $('#foto_profile').val();
-
-  // console.log(uid_card);
-
-  if (foto_profile) {
-
-    const formData = new FormData();
-
-    const fileInput = document.getElementById('foto_profile');
-
-    fileInput.addEventListener('change', function () {
-      for (let file of fileInput.files) {
-        formData.append('documents', file);
-      }
-    });
-
-    // set some other regular text field value
-    formData.append('title', 'Hello world!');
-
-    // upload and create new record
-    const createdRecord = await pb.collection('users').create(formData);
-  }
-  // console.log("Password Sama");
+  var divisi = $('#divisi').val();
+  var jabatan = $('#jabatan').val();
 
   // Create Data
   const data = {
@@ -162,10 +143,10 @@ async function saveData() {
     "passwordConfirm": '12345678',
     "name": name.val(),
     "uid": uid_card,
-    "divisi": "temp",
-    "jabatan": "temp",
-    "level": 3,
-    "tanggal_masuk": "2022-01-01 10:00:00.123Z"
+    "divisi": divisi,
+    "jabatan": jabatan,
+    "level": "karyawan",
+    "tgl_masuk": tanggal_masuk
   };
 
   const record = await pb.collection('users').create(data);
@@ -196,14 +177,13 @@ function addCard() {
 
 async function getDetail($id) {
   const record = await pb.collection('users').getOne($id, {});
-
   if (record) {
     console.log(record);
     $('#det_idKar').val(record.uid);
     $('#det_name').val(record.name);
     $('#det_divisi').val(record.divisi);
     $('#det_jabatan').val(record.jabatan);
-    $('#det_tglmasuk').val(record.tanggal_masuk);
+    $('#det_tglmasuk').val(record.tgl_masuk);
   } else {
     console.log('Data Tidak Ditemukan');
   }

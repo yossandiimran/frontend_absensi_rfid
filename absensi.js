@@ -22,7 +22,7 @@ async function filterAbsensi() {
 
 async function getRekapHarian(firstDay, lastDay) {
     const resultList = await pb.collection('rekap').getFullList({
-        filter: 'jam_absen >=  "' + firstDay + '" && jam_absen <= "' + lastDay + '"'
+        filter: 'created >=  "' + firstDay + '" && created <= "' + lastDay + '"'
     });
     return resultList;
 }

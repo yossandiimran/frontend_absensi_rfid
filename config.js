@@ -57,9 +57,18 @@ function logout() {
 }
 
 function formatJam(jam) {
-    const date = new Date(jam);
-    const hours = date.getUTCHours().toString().padStart(2, '0');
-    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-    const timeStr = `${hours}:${minutes}`;
-    return timeStr;
+    if (jam != null) {
+        const date = new Date(jam);
+        // Tambahkan 7 jam untuk mengonversi ke WIB (UTC+7)
+        date.setHours(date.getUTCHours() + 7);
+        // Format jam dan menit dengan padStart agar memiliki 2 digit
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+
+        const timeStr = `${hours}:${minutes}`;
+        return timeStr;
+    }else{
+        return "-";
+    }   
+
 }

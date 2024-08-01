@@ -15,7 +15,7 @@ $(document).ready(async function () {
             <td>${getStatus(e.status)}</td>
             <td>${e.divisi}</td>
             <td>${formatJam(e.jam_masuk) != "00:00" ? formatJam(e.jam_masuk) : "-"}</td>
-            <td>${formatJam(e.jam_keluar) != "00:00" ? formatJam(e.jam_keluar) : "-"}</td>
+            <td>${formatJam(e.jam_keluar) != "00:00" && e.jam_keluar != e.jam_masuk ? formatJam(e.jam_keluar) : "-"}</td>
         </tr>
     `;
         $tbody.append(row);
