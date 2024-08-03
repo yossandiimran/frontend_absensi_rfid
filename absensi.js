@@ -1,6 +1,9 @@
 var dataKaryawan = [];
 
 $(document).ready(async function () {
+
+
+
     var now = new Date();
     var firstDay = new Date(now.getFullYear(), now.getMonth(), 2);
     var firstDayStr = firstDay.toISOString().split('T')[0];
@@ -74,7 +77,7 @@ async function appendToTableRekap(data) {
 
         while (currentDate <= endDate) {
             const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 0 && dayOfWeek !== 6) { 
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
                 count++;
             }
             currentDate.setDate(currentDate.getDate() + 1);
@@ -120,11 +123,57 @@ async function appendToTableRekap(data) {
                         </div>
                     </td>
                      <td>
-                        <button type="button" class="btn btn-sm btn-primary"><span class="fa fa-eye"></span></button>               
+                        <button type="button" onclick=openModalDetail("${btoa(JSON.stringify(e))}") class="btn btn-sm btn-primary"><span class="fa fa-eye"></span></button>           
                     </td>
                 </tr>
        
         `;
         $tbody.append(row);
     });
+}
+
+async function openModalDetail(data) {
+    const karyawan = JSON.parse(atob(data));
+
+
+    function getDateParts(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // getMonth() mengembalikan bulan dari 0 (Januari) hingga 11 (Desember)
+        const day = date.getDate();
+        return { year, month, day };
+    }
+
+    const dateParts = getDateParts(karyawan.absensi);
+    console.log(karyawan.absensi);
+
+    const events = karyawan.absensi.map(karyawan => {
+        const { year, month, day } = getDateParts(karyawan);
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        var titl = "Hadir";
+
+        var jam = formatJam(karyawan);
+
+        if (jam > "08:00") {
+            col = "red";
+            titl = "Terlambat";
+        } else {
+            col = "green";
+        }
+
+        return {
+            title: ` (${jam}) - ${titl}`,
+            start: dateStr,
+            color: col
+        };
+    });
+
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        events: events
+    });
+
+    $('#modalDetail').modal('show');
+    calendar.render();
 }

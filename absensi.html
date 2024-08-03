@@ -30,7 +30,15 @@
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.css">
   <!-- DataTables -->
   <link rel="stylesheet" href="assets/style/dataTables.css">
+  <style>
+    .modal-dialog {
+      max-width: 80%;
+    }
 
+    .fc-day {
+      height: 25px !important;
+    }
+  </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100" style="font-family: 'Plus Jakarta Sans', sans-serif;">
@@ -172,7 +180,8 @@
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Divisi</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah Kehadiran</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah
+                        Kehadiran</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">
                         KPI</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Detail</th>
@@ -187,7 +196,26 @@
           </div>
         </div>
       </div>
+
       <!-- Table -->
+    </div>
+    <div class="modal" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-3 text-warning" id="modalDetailLabel">Information!!!!</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" style="height: 100%;">
+            <div class="container-fluid">
+              <div id='calendar'></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </body>
@@ -212,6 +240,7 @@
 <!-- Bootstrap -->
 <script src="assets/bootstrap/js/bootstrap.js"></script>
 <script src="assets/dist/pocketbase.umd.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 
 <script src="config.js"></script>
 <script src="absensi.js"></script>
