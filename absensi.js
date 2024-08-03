@@ -14,9 +14,10 @@ $(document).ready(async function () {
 });
 
 async function filterAbsensi() {
+    dataKaryawan = []
     var tglAwal = $('#tgl_awal').val();
     var tglAkhir = $('#tgl_akhir').val();
-
+    await getKaryawan()
     await appendToTableRekap(await getRekapHarian(tglAwal, tglAkhir));
 }
 
@@ -35,7 +36,6 @@ async function getKaryawan() {
 }
 
 async function appendToTableRekap(data) {
-    console.log(dataKaryawan);
     const groupedData = {};
 
     data.forEach(item => {
@@ -46,15 +46,54 @@ async function appendToTableRekap(data) {
                 absensi: []
             };
         }
-        groupedData[item.uid].absensi.push(item.jam_absen);
+        // Extract hanya tanggal dari item.created
+        const dateOnly = item.created.split(' ')[0];
+
+        // Periksa apakah tanggal sudah ada di array absensi
+        if (!groupedData[item.uid].absensi.some(date => date.startsWith(dateOnly))) {
+            groupedData[item.uid].absensi.push(item.created);
+        }
     });
 
     const newGroupData = Object.values(groupedData);
 
-    console.log(newGroupData);
+    dataKaryawan.forEach(items => {
+        newGroupData.forEach(item => {
+            if (items.uid == item.uid) {
+                items.absensi = item.absensi
+            }
+        });
+    });
+
+    const tglAwal = new Date($('#tgl_awal').val());
+    const tglAkhir = new Date($('#tgl_akhir').val());
+
+    const getWeekdaysCount = (startDate, endDate) => {
+        let count = 0;
+        let currentDate = new Date(startDate);
+
+        while (currentDate <= endDate) {
+            const dayOfWeek = currentDate.getDay();
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) { 
+                count++;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        return count;
+    };
+
+    const diffDays = getWeekdaysCount(tglAwal, tglAkhir);
 
     const $tbody = $('#bodyViewRekapKaryawan');
+    $tbody.html('');
     dataKaryawan.forEach(function (e) {
+        var kpi = 0;
+        var jmlAbsen = 0;
+        if (e.absensi != undefined) {
+            jmlAbsen = e.absensi.length
+            kpi = ((jmlAbsen / diffDays) * 100).toFixed(2);;
+        }
         const row = `
                 <tr>
                     <td>
@@ -67,12 +106,15 @@ async function appendToTableRekap(data) {
                     <td>
                         <p class="text-sm font-weight-bold mb-0">${e.divisi}</p>
                     </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">${jmlAbsen} dari ${diffDays} hari Kerja</p>
+                    </td>
                     <td class="align-middle text-center">
                         <div class="d-flex align-items-center justify-content-center">
-                        <span class="me-2 text-xs font-weight-bold">20%</span>
+                        <span class="me-2 text-xs font-weight-bold">${kpi}%</span>
                         <div>
                             <div class="progress">
-                            <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%;"></div>
+                            <div class="progress-bar bg-gradient-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: ${kpi}%;"></div>
                             </div>
                         </div>
                         </div>
