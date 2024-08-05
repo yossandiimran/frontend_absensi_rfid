@@ -16,6 +16,45 @@ $(document).ready(async function () {
     await appendToTableRekap(await getRekapHarian(firstDayStr, lastDayStr));
 });
 
+// Download PDF
+var specialElementHandlers = {
+    '#editor': function (element, renderer) {
+        return true;
+    }
+};
+
+$('#submit_pdf').click(function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'a4');
+    // Define table column titles and data
+    const columns = ["Nama", "Divisi", "Kehadiran", "Persentase", "Tanggal Kehadiran"];
+    const data = [];
+
+    $('#bodyViewPdf tr').each(function () {
+        const row = [];
+        $(this).find('td').each(function () {
+            row.push($(this).html().replace(/<br>/g, '\n'));
+        });
+        data.push(row);
+    });
+
+    doc.autoTable({
+        head: [columns],
+        body: data,
+        startY: 20,
+        theme: 'striped',
+        margin: { top: 20 },
+        styles: { fontSize: 10 },
+        columnStyles: {
+            4: { cellWidth: 'wrap' }
+        },
+    });
+
+    // Save the PDF
+    doc.save('Rekap_Absensi.pdf');
+
+});
+
 async function filterAbsensi() {
     dataKaryawan = []
     var tglAwal = $('#tgl_awal').val();
@@ -89,6 +128,7 @@ async function appendToTableRekap(data) {
     const diffDays = getWeekdaysCount(tglAwal, tglAkhir);
 
     const $tbody = $('#bodyViewRekapKaryawan');
+    const $tbodyPdf = $('#bodyViewPdf');
     $tbody.html('');
     dataKaryawan.forEach(function (e) {
         var kpi = 0;
@@ -128,8 +168,25 @@ async function appendToTableRekap(data) {
                 </tr>
        
         `;
+
+        let absensiDates = e.absensi.map(date => new Date(date).toLocaleDateString()).join('\n');
+        const rowPdf = `
+                <tr>
+                    <td>${e.name}</td>
+                    <td>${e.divisi}</td>
+                    <td>${jmlAbsen} dari ${diffDays} hari Kerja</td>
+                    <td class="align-middle text-center">${kpi}%</td>
+                    <td>${absensiDates.replace(/\n/g, '<br>')}</td>
+                </tr>
+       
+        `;
         $tbody.append(row);
+        $tbodyPdf.append(rowPdf);
     });
+}
+
+function getAbsensiDetail(data) {
+    return '<adsasdsad>';
 }
 
 async function openModalDetail(data) {
