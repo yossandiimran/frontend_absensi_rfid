@@ -23,6 +23,25 @@ var specialElementHandlers = {
     }
 };
 
+
+$('#submit_excel').click(function () {
+    // Get the table element
+    var table = document.querySelector('#content table');
+
+    // Create a new workbook
+    var wb = XLSX.utils.book_new();
+
+    // Convert the HTML table to a worksheet
+    var ws = XLSX.utils.table_to_sheet(table);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+    // Generate an Excel file
+    XLSX.writeFile(wb, 'Kehadiran.xlsx');
+
+});
+
 $('#submit_pdf').click(function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
