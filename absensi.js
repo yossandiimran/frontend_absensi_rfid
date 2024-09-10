@@ -1,58 +1,93 @@
 var dataKaryawan = [];
+var table; 
 
 $(document).ready(async function () {
-
-
-
     var now = new Date();
-    var firstDay = new Date(now.getFullYear(), now.getMonth(), 2);
-    var firstDayStr = firstDay.toISOString().split('T')[0];
-    var lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    var lastDayStr = lastDay.toISOString().split('T')[0];
+    var year = now.getFullYear();
+    var month = (now.getMonth() + 1).toString().padStart(2, '0');
+    var selectedMonth = year + '-' + month;
+    $('#tgl_awal').val(selectedMonth);
+    await filterAbsensi('init');
 
-    $('#tgl_awal').val(firstDayStr);
-    $('#tgl_akhir').val(lastDayStr);
-    await getKaryawan()
-    await appendToTableRekap(await getRekapHarian(firstDayStr, lastDayStr));
+    table = await $('#rekapKaryawanTable').DataTable({
+        "paging": true,     
+        "searching": true,  
+        "ordering": true,   
+        "info": true        
+    });
 });
 
-// Download PDF
 var specialElementHandlers = {
     '#editor': function (element, renderer) {
         return true;
     }
 };
 
+function reloadTable() {
+    var updatedData = [];
+    $('#bodyViewRekapKaryawan tr').each(function() {
+        var row = [];
+        $(this).find('td').each(function() {
+            row.push($(this).html());
+        });
+        updatedData.push(row);
+    });
+
+    table.clear();
+    table.rows.add(updatedData); 
+    table.draw(); 
+}
+
 
 $('#submit_excel').click(function () {
-    // Get the table element
     var table = document.querySelector('#content table');
 
-    // Create a new workbook
     var wb = XLSX.utils.book_new();
 
-    // Convert the HTML table to a worksheet
-    var ws = XLSX.utils.table_to_sheet(table);
+    var ws = XLSX.utils.table_to_sheet(table, { origin: 'A2' });
 
-    // Append the worksheet to the workbook
+    const tglAwal = $('#tgl_awal').val();
+    if (tglAwal) {
+        const date = new Date(tglAwal);
+        const options = { year: 'numeric', month: 'long' };
+        const formattedDate = date.toLocaleString('id-ID', options);
+
+        ws['A1'] = { t: 's', v: `Rekapitulasi Absensi Periode: ${formattedDate}` };
+        ws['!merges'] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }
+        ];
+
+        XLSX.utils.sheet_add_aoa(ws, [[]], { origin: -1 });
+    }
+
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
-    // Generate an Excel file
-    XLSX.writeFile(wb, 'Kehadiran.xlsx');
+    XLSX.writeFile(wb, `Rekap-Absen-Periode-${formattedDate}.xlsx`);
 
 });
 
 $('#submit_pdf').click(function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
-    // Define table column titles and data
+    const tglAwal = $('#tgl_awal').val();
+    if (tglAwal) {
+        const date = new Date(tglAwal + '-01');
+
+        const options = { year: 'numeric', month: 'long' };
+        const formattedDate = date.toLocaleString('id-ID', options);
+
+        doc.setFontSize(12);
+        doc.text("Rekapitulasi Absensi", 40, 40);
+        doc.text(`Periode: ${formattedDate}`, 40, 60);
+    }
+
     const columns = ["Nama", "Divisi", "Kehadiran", "Persentase", "Tanggal Kehadiran"];
     const data = [];
 
     $('#bodyViewPdf tr').each(function () {
         const row = [];
         $(this).find('td').each(function () {
-            row.push($(this).html().replace(/<br>/g, '\n'));
+            row.push($(this).html().replace(/<br>/g, '\n')); 
         });
         data.push(row);
     });
@@ -60,26 +95,32 @@ $('#submit_pdf').click(function () {
     doc.autoTable({
         head: [columns],
         body: data,
-        startY: 20,
+        startY: 80, 
         theme: 'striped',
         margin: { top: 20 },
         styles: { fontSize: 10 },
         columnStyles: {
-            4: { cellWidth: 'wrap' }
+            4: { cellWidth: 'wrap' } 
         },
     });
 
-    // Save the PDF
     doc.save('Rekap_Absensi.pdf');
 
 });
 
-async function filterAbsensi() {
+async function filterAbsensi(init) {
     dataKaryawan = []
-    var tglAwal = $('#tgl_awal').val();
-    var tglAkhir = $('#tgl_akhir').val();
+    var selectedMonth = $('#tgl_awal').val();
+    var firstDayStr = selectedMonth + '-01';
+    var tglAwals = new Date(firstDayStr);
+    var tglAkhirs = new Date(tglAwals.getFullYear(), tglAwals.getMonth() + 1, 0);
+    var tglAwalFormatted = tglAwals.toISOString().split('T')[0];
+    var tglAkhirFormatted = tglAkhirs.toISOString().split('T')[0];
     await getKaryawan()
-    await appendToTableRekap(await getRekapHarian(tglAwal, tglAkhir));
+    await appendToTableRekap(await getRekapHarian(tglAwalFormatted, tglAkhirFormatted));
+    if(init != 'init'){
+        reloadTable();
+    }
 }
 
 async function getRekapHarian(firstDay, lastDay) {
@@ -107,10 +148,9 @@ async function appendToTableRekap(data) {
                 absensi: []
             };
         }
-        // Extract hanya tanggal dari item.created
+
         const dateOnly = item.created.split(' ')[0];
 
-        // Periksa apakah tanggal sudah ada di array absensi
         if (!groupedData[item.uid].absensi.some(date => date.startsWith(dateOnly))) {
             groupedData[item.uid].absensi.push(item.created);
         }
@@ -126,8 +166,22 @@ async function appendToTableRekap(data) {
         });
     });
 
-    const tglAwal = new Date($('#tgl_awal').val());
-    const tglAkhir = new Date($('#tgl_akhir').val());
+
+    var selectedMonth = $('#tgl_awal').val();
+    var firstDayStr = selectedMonth + '-01';
+    var tglAwals = new Date(firstDayStr);
+
+    var tglAkhirs = new Date(tglAwals.getFullYear(), tglAwals.getMonth() + 1, 0);
+
+    var tglAwalFormatted = tglAwals.toISOString().split('T')[0];
+    var tglAkhirFormatted = tglAkhirs.toISOString().split('T')[0];
+
+    const tglAwal = new Date(tglAwalFormatted);
+    const tglAkhir = new Date(tglAkhirFormatted);
+
+    console.log(tglAwal)
+    console.log(tglAkhir)
+
 
     const getWeekdaysCount = (startDate, endDate) => {
         let count = 0;
@@ -149,12 +203,13 @@ async function appendToTableRekap(data) {
     const $tbody = $('#bodyViewRekapKaryawan');
     const $tbodyPdf = $('#bodyViewPdf');
     $tbody.html('');
+    $tbodyPdf.html('');
     dataKaryawan.forEach(function (e) {
         var kpi = 0;
         var jmlAbsen = 0;
         if (e.absensi != undefined) {
             jmlAbsen = e.absensi.length
-            kpi = ((jmlAbsen / diffDays) * 100).toFixed(2);;
+            kpi = ((jmlAbsen / diffDays) * 100).toFixed(2);
         }
         const row = `
                 <tr>
@@ -169,7 +224,7 @@ async function appendToTableRekap(data) {
                         <p class="text-sm font-weight-bold mb-0">${e.divisi}</p>
                     </td>
                     <td>
-                        <p class="text-sm font-weight-bold mb-0">${jmlAbsen} dari ${diffDays} hari Kerja</p>
+                        <p class="text-sm font-weight-bold mb-0">${jmlAbsen} dari ${diffDays + 1} hari Kerja</p>
                     </td>
                     <td class="align-middle text-center">
                         <div class="d-flex align-items-center justify-content-center">
@@ -188,16 +243,18 @@ async function appendToTableRekap(data) {
        
         `;
 
-        let absensiDates = e.absensi.map(date => new Date(date).toLocaleDateString()).join('\n');
+        var absensiDates = "\n ";
+        if (e.absensi != undefined) {
+            absensiDates = e.absensi.map(date => new Date(date).toLocaleDateString()).join('\n •');
+        }
         const rowPdf = `
                 <tr>
                     <td>${e.name}</td>
                     <td>${e.divisi}</td>
-                    <td>${jmlAbsen} dari ${diffDays} hari Kerja</td>
+                    <td>${jmlAbsen}</td>
                     <td class="align-middle text-center">${kpi}%</td>
-                    <td>${absensiDates.replace(/\n/g, '<br>')}</td>
+                    <td> •${absensiDates.replace(/\n/g, '<br>')}</td>
                 </tr>
-       
         `;
         $tbody.append(row);
         $tbodyPdf.append(rowPdf);
@@ -215,7 +272,7 @@ async function openModalDetail(data) {
     function getDateParts(dateString) {
         const date = new Date(dateString);
         const year = date.getFullYear();
-        const month = date.getMonth() + 1; // getMonth() mengembalikan bulan dari 0 (Januari) hingga 11 (Desember)
+        const month = date.getMonth() + 1;
         const day = date.getDate();
         return { year, month, day };
     }

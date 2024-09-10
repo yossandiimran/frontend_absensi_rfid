@@ -148,7 +148,7 @@
 
       <!-- Table -->
       <div class="row">
-        <div class="col-12">
+        <div class="col-12" style="padding: 10px;">
           <div class="card mb-4">
             <h3 style="padding-left: 20px; padding-top: 20px;">Rekap Absensi</h3>
             <hr>
@@ -156,12 +156,8 @@
               <div class="container">
                 <div class="row">
                   <div class="col-md-3">
-                    <label for="tgl_awal">Periode Awal</label>
-                    <input type="date" name="tgl_awal" class="form-control" id="tgl_awal">
-                  </div>
-                  <div class="col-md-3">
-                    <label for="tgl_akhir">Periode Akhir</label>
-                    <input type="date" name="tgl_akhir" class="form-control" id="tgl_akhir">
+                    <label for="tgl_awal">Periode</label>
+                    <input type="month" name="tgl_awal" class="form-control" id="tgl_awal">
                   </div>
                   <div class="col-md-6">
                     <hr>
@@ -174,21 +170,19 @@
                   </div>
                 </div>
               </div>
-              <div class="table-responsive p-0">
-                <table class="table align-items-center justify-content-center mb-0">
+              <div class="container">
+                <table id="rekapKaryawanTable">
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Divisi</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah
-                        Kehadiran</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">
-                        KPI</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Jumlah Kehadiran</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">KPI</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Detail</th>
                     </tr>
                   </thead>
                   <tbody id="bodyViewRekapKaryawan">
-
+                   
                   </tbody>
                 </table>
               </div>
