@@ -81,7 +81,7 @@ $('#submit_pdf').click(function () {
         doc.text(`Periode: ${formattedDate}`, 40, 60);
     }
 
-    const columns = ["Nama", "Divisi", "Kehadiran", "Persentase", "Tanggal Kehadiran"];
+    const columns = ["Nama", "UID", "Divisi", "Kehadiran", "Persentase", "Tanggal Kehadiran"];
     const data = [];
 
     $('#bodyViewPdf tr').each(function () {
@@ -220,6 +220,13 @@ async function appendToTableRekap(data) {
                         </div>
                         </div>
                     </td>
+                     <td>
+                        <div class="d-flex px-2">
+                        <div class="my-auto">
+                            <h6 class="mb-0 text-sm">${e.uid}</h6>
+                        </div>
+                        </div>
+                    </td>
                     <td>
                         <p class="text-sm font-weight-bold mb-0">${e.divisi}</p>
                     </td>
@@ -250,6 +257,7 @@ async function appendToTableRekap(data) {
         const rowPdf = `
                 <tr>
                     <td>${e.name}</td>
+                    <td>${e.uid}</td>
                     <td>${e.divisi}</td>
                     <td>${jmlAbsen}</td>
                     <td class="align-middle text-center">${kpi}%</td>
