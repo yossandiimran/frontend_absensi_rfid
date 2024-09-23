@@ -1,19 +1,42 @@
 var dataKaryawan = [];
-var table; 
+var table;
 
 $(document).ready(async function () {
     var now = new Date();
     var year = now.getFullYear();
     var month = (now.getMonth() + 1).toString().padStart(2, '0');
-    var selectedMonth = year + '-' + month;
-    $('#tgl_awal').val(selectedMonth);
+    $('#bulan').val(month);
+    $('#tahun').val(year);
     await filterAbsensi('init');
 
     table = await $('#rekapKaryawanTable').DataTable({
-        "paging": true,     
-        "searching": true,  
-        "ordering": true,   
-        "info": true        
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true
+    });
+
+    $('#divisi').on('change', function () {
+        var selectedDivisi = $(this).val().toLowerCase(); // Ambil nilai divisi yang dipilih
+
+        if (selectedDivisi) {
+            // Jika divisi dipilih, filter berdasarkan nilai divisi
+            table.column(2).search(selectedDivisi).draw();
+        } else {
+            // Jika "Semua" dipilih, reset filter
+            table.column(2).search('').draw();
+        }
+
+        // Loop melalui setiap baris di tabel
+        $('#bodyViewPdf tr').each(function () {
+            var rowDivisi = $(this).find('td:eq(2)').text().toLowerCase(); // Ambil nilai Divisi di kolom ke-3
+            // Jika divisi dipilih atau opsi "Semua" dipilih
+            if (selectedDivisi === "" || rowDivisi === selectedDivisi) {
+                $(this).show(); // Tampilkan baris yang sesuai
+            } else {
+                $(this).hide(); // Sembunyikan baris yang tidak sesuai
+            }
+        });
     });
 });
 
@@ -25,17 +48,17 @@ var specialElementHandlers = {
 
 function reloadTable() {
     var updatedData = [];
-    $('#bodyViewRekapKaryawan tr').each(function() {
+    $('#bodyViewRekapKaryawan tr').each(function () {
         var row = [];
-        $(this).find('td').each(function() {
+        $(this).find('td').each(function () {
             row.push($(this).html());
         });
         updatedData.push(row);
     });
 
     table.clear();
-    table.rows.add(updatedData); 
-    table.draw(); 
+    table.rows.add(updatedData);
+    table.draw();
 }
 
 
@@ -44,17 +67,20 @@ $('#submit_excel').click(function () {
 
     var wb = XLSX.utils.book_new();
 
-    var ws = XLSX.utils.table_to_sheet(table, { origin: 'A2' });
+    var ws = XLSX.utils.table_to_sheet(table, { origin: 'A3' });
 
-    const tglAwal = $('#tgl_awal').val();
+    // const tglAwal = $('#tgl_awal').val();
+    const tglAwal = $('#tahun').val() + '-' + $('#bulan').val();
     if (tglAwal) {
-        const date = new Date(tglAwal);
+        const date = new Date(tglAwal + '-01');
         const options = { year: 'numeric', month: 'long' };
         const formattedDate = date.toLocaleString('id-ID', options);
 
         ws['A1'] = { t: 's', v: `Rekapitulasi Absensi Periode: ${formattedDate}` };
+        ws['A2'] = { t: 's', v: `Divisi: ${$("#divisi").val()}` };
         ws['!merges'] = [
-            { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+            { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
         ];
 
         XLSX.utils.sheet_add_aoa(ws, [[]], { origin: -1 });
@@ -69,7 +95,8 @@ $('#submit_excel').click(function () {
 $('#submit_pdf').click(function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
-    const tglAwal = $('#tgl_awal').val();
+    // const tglAwal = $('#tgl_awal').val();
+    const tglAwal = $('#tahun').val() + '-' + $('#bulan').val();
     if (tglAwal) {
         const date = new Date(tglAwal + '-01');
 
@@ -79,28 +106,32 @@ $('#submit_pdf').click(function () {
         doc.setFontSize(12);
         doc.text("Rekapitulasi Absensi", 40, 40);
         doc.text(`Periode: ${formattedDate}`, 40, 60);
+        doc.text(`Divisi: ${$('#divisi').val()}`, 40, 80);
     }
 
     const columns = ["Nama", "UID", "Divisi", "Kehadiran", "Persentase", "Tanggal Kehadiran"];
     const data = [];
 
     $('#bodyViewPdf tr').each(function () {
-        const row = [];
-        $(this).find('td').each(function () {
-            row.push($(this).html().replace(/<br>/g, '\n')); 
-        });
-        data.push(row);
+        // Cek apakah baris sedang terlihat
+        if ($(this).is(':visible')) {
+            const row = [];
+            $(this).find('td').each(function () {
+                row.push($(this).html().replace(/<br>/g, '\n')); // Ambil nilai kolom dan ganti <br> dengan newline (\n)
+            });
+            data.push(row); // Tambahkan baris ke array data jika baris terlihat
+        }
     });
 
     doc.autoTable({
         head: [columns],
         body: data,
-        startY: 80, 
+        startY: 100,
         theme: 'striped',
         margin: { top: 20 },
         styles: { fontSize: 10 },
         columnStyles: {
-            4: { cellWidth: 'wrap' } 
+            4: { cellWidth: 'wrap' }
         },
     });
 
@@ -110,7 +141,8 @@ $('#submit_pdf').click(function () {
 
 async function filterAbsensi(init) {
     dataKaryawan = []
-    var selectedMonth = $('#tgl_awal').val();
+    // var selectedMonth = $('#tgl_awal').val();
+    var selectedMonth = $('#tahun').val() + '-' + $('#bulan').val();
     var firstDayStr = selectedMonth + '-01';
     var tglAwals = new Date(firstDayStr);
     var tglAkhirs = new Date(tglAwals.getFullYear(), tglAwals.getMonth() + 1, 0);
@@ -118,9 +150,10 @@ async function filterAbsensi(init) {
     var tglAkhirFormatted = tglAkhirs.toISOString().split('T')[0];
     await getKaryawan()
     await appendToTableRekap(await getRekapHarian(tglAwalFormatted, tglAkhirFormatted));
-    if(init != 'init'){
+    if (init != 'init') {
         reloadTable();
     }
+    $('#divisi').trigger('change');
 }
 
 async function getRekapHarian(firstDay, lastDay) {
@@ -167,7 +200,8 @@ async function appendToTableRekap(data) {
     });
 
 
-    var selectedMonth = $('#tgl_awal').val();
+    // var selectedMonth = $('#tgl_awal').val();
+    var selectedMonth = $('#tahun').val() + '-' + $('#bulan').val();
     var firstDayStr = selectedMonth + '-01';
     var tglAwals = new Date(firstDayStr);
 
