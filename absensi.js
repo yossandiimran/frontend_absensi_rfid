@@ -319,36 +319,41 @@ async function openModalDetail(data) {
         return { year, month, day };
     }
 
-    const dateParts = getDateParts(karyawan.absensi);
-    console.log(karyawan.absensi);
+    try {
+        console.log(karyawan.absensi);
 
-    const events = karyawan.absensi.map(karyawan => {
-        const { year, month, day } = getDateParts(karyawan);
-        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        var titl = "Hadir";
+        const events = karyawan.absensi.map(karyawan => {
+            const { year, month, day } = getDateParts(karyawan);
+            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            var titl = "Hadir";
 
-        var jam = formatJam(karyawan);
+            var jam = formatJam(karyawan);
 
-        if (jam > "08:00") {
-            col = "red";
-            titl = "Terlambat";
-        } else {
-            col = "green";
-        }
+            if (jam > "08:00") {
+                col = "red";
+                titl = "Terlambat";
+            } else {
+                col = "green";
+            }
 
-        return {
-            title: ` (${jam}) - ${titl}`,
-            start: dateStr,
-            color: col
-        };
-    });
+            return {
+                title: ` (${jam}) - ${titl}`,
+                start: dateStr,
+                color: col
+            };
+        });
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: events
+        });
 
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: events
-    });
+        $('#modalDetail').modal('show');
+        calendar.render();
+    } catch {
+        alert('Data Absensi Kosong !!');
+    }
 
-    $('#modalDetail').modal('show');
-    calendar.render();
+
+
 }

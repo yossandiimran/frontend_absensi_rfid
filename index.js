@@ -7,11 +7,23 @@ $(document).ready(async function () {
     $('#jumAbsen').text(getJumlahToday.totalItems);
     $('#jumTakAbsen').text(get.length - getJumlahToday.totalItems);
 
+
+
     const $tbody = $('#bodyViewRekapKaryawan');
     get.forEach(function (e) {
+        var now = new Date().toISOString().split('T')[0];
+        console.log(now);
+        console.log(e.tgl_masuk.split('T')[0]);
+        var tglMasuk = new Date(e.tgl_masuk).toISOString().split('T')[0];
+        if (tglMasuk === now) {
+            var stat = '<div class="bg-primary btn btn-primary btn-sm">Karyawan&nbsp;Baru</div>';
+        } else {
+            var stat = '';
+        }
         const row = `
         <tr>
             <td>${e.name}</td>
+            <td>${stat}</td>
             <td>${getStatus(e.status)}</td>
             <td>${e.divisi}</td>
             <td>${formatJam(e.jam_masuk) != "00:00" ? formatJam(e.jam_masuk) : "-"}</td>
