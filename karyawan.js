@@ -35,7 +35,7 @@ $(document).ready(async function () {
                           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalEdit" onclick="editFunct('`+ e.id + `')">
                             <i class="fa-solid fa-pen-to-square"></i>
                           </button>
-                          <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalHapus" onclick="delFunct('`+ e.id + `')">
+                          <button class="btn btn-danger" onclick="delFunct('`+ e.id + `')">
                             <i class="fa-solid fa-trash-can"></i>
                           </button>
                         </div>
@@ -192,11 +192,14 @@ async function getDetail($id) {
 
 function delFunct($id) {
 
-  $('#modalHapus').modal('show');
+  // $('#modalHapus').modal('show');
 
-  $('#btnHapus').click(async () => {
-    console.log("Button Hapus di click");
-    const record = await pb.collection('users').delete($id);
+  // $('#btnHapus').click(async () => {
+  console.log("Button Hapus di click");
+
+  const hasil = confirm("Apakah Anda yakin ingin menghapus karyawan ini?");
+  if (hasil) {
+    const record = pb.collection('users').delete($id);
 
     if (record) {
       alert('Data Berhasil Terhapus');
@@ -204,8 +207,10 @@ function delFunct($id) {
     } else {
       window.location.reload();
     }
+  }
 
-  });
+
+  // });
 }
 
 // Edit Function

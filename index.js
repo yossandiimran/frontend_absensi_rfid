@@ -7,8 +7,6 @@ $(document).ready(async function () {
     $('#jumAbsen').text(getJumlahToday.totalItems);
     $('#jumTakAbsen').text(get.length - getJumlahToday.totalItems);
 
-
-
     const $tbody = $('#bodyViewRekapKaryawan');
     get.forEach(function (e) {
         var now = new Date().toISOString().split('T')[0];
